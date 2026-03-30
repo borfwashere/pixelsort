@@ -82,7 +82,7 @@
         .eff-select { background: white; border: 1px solid var(--win-black); font-size: 11px; padding: 2px; width: 100%; margin-bottom: 8px; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
 <div class="window">
     <div class="title-bar">
@@ -136,7 +136,18 @@
 </div>
 
 <script>
-    // --- KIMSORT ENGINE CORE ---
+    // --- PROTOCOLO DE SEGURIDAD ---
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+        if (e.key === "F12" || 
+           (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
+           (e.ctrlKey && e.key === 'u')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // --- ENGINE CORE ---
     const canvas = document.getElementById('mainCanvas');
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     const video = document.getElementById('vSrc');
@@ -152,28 +163,18 @@
         currentOriginal.onload = () => restoreCurrent();
     };
 
-    // --- SECURITY PROTOCOL ---
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.addEventListener('keydown', e => {
-        if (e.key === "F12" || 
-           (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
-           (e.ctrlKey && e.key === 'u')) {
-            e.preventDefault();
-            return false;
-        }
-    });
-
-    // --- LOGIC FUNCTIONS ---
     function toggleDir(dir) {
+        // CORRECCIÓN: Ahora solo marca la dirección sin ejecutar el proceso.
         activeDirs[dir] = !activeDirs[dir];
         document.getElementById(`btn-${dir}`).classList.toggle('active');
-        if(!isVideo) processFrame();
+        updateStatus(`Vector ${dir.toUpperCase()} ${activeDirs[dir] ? 'ACTIVE' : 'INACTIVE'}`);
     }
 
     function updateThreshVisual(val) {
         document.getElementById('threshVal').innerText = val;
         document.getElementById('threshold').style.setProperty('--thr-pc', `${(val/255)*100}%`);
-        if(!isVideo) processFrame();
+        // Opcional: Si quieres que el threshold tampoco dispare el efecto, comenta la línea de abajo.
+        if(!isVideo && isPlaying) processFrame(); 
     }
 
     function loadFile(file) {
@@ -216,7 +217,10 @@
             if (isPlaying) { video.play(); renderLoop(); } 
             else { video.pause(); if (animFrame) cancelAnimationFrame(animFrame); }
             pBtn.innerText = isPlaying ? "STOP KIMSORT" : "PLAY VIDEO";
-        } else { renderLoop(); }
+        } else { 
+            // En imágenes estáticas, procesar una vez al pulsar el botón
+            processFrame(); 
+        }
     }
 
     function renderLoop() {
@@ -229,6 +233,9 @@
         const type = document.getElementById('effectType').value;
         const thresh = parseInt(document.getElementById('threshold').value);
         const noDir = !activeDirs.up && !activeDirs.down && !activeDirs.left && !activeDirs.right;
+        
+        updateStatus("KIMSORT EXECUTING...");
+        
         if (activeDirs.left || activeDirs.right || noDir) runSort('horizontal', thresh, type, activeDirs.left ? -1 : 1, noDir);
         if (activeDirs.up || activeDirs.down) runSort('vertical', thresh, type, activeDirs.up ? -1 : 1, false);
     }
@@ -267,7 +274,13 @@
         const effects = ['brightness', 'saturation', 'red'];
         document.getElementById('effectType').value = effects[Math.floor(Math.random() * effects.length)];
         updateThreshVisual(Math.floor(Math.random() * 200));
-        ['up', 'down', 'left', 'right'].forEach(d => { if(Math.random() > 0.5) { if(!activeDirs[d]) toggleDir(d); } else { if(activeDirs[d]) toggleDir(d); } });
+        ['up', 'down', 'left', 'right'].forEach(d => { 
+            if(Math.random() > 0.5) { 
+                if(!activeDirs[d]) { activeDirs[d] = true; document.getElementById(`btn-${d}`).classList.add('active'); }
+            } else {
+                if(activeDirs[d]) { activeDirs[d] = false; document.getElementById(`btn-${d}`).classList.remove('active'); }
+            }
+        });
     }
 
     function snapFrame() {
