@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KIMSORT - v5.0 Gold Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>KIMSORT - v5.1 Lockdown</title>
     <style>
         :root {
             --win-gray: #c0c0c0; --win-white: #ffffff; --win-dark-gray: #808080;
@@ -11,51 +11,58 @@
             --glitch-fucsia: #ff00ff; --glitch-cian: #00ffff;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html, body { 
+            position: fixed; /* Bloqueo total de la posición de la página */
+            width: 100%; height: 100%; 
+            overflow: hidden; touch-action: none; /* Elimina gestos del navegador */
+        }
 
         body { 
             background-color: #008080; margin: 0; display: flex; align-items: center; 
-            justify-content: center; min-height: 100vh; font-family: "Tahoma", sans-serif; 
-            user-select: none; overflow: hidden; padding: 10px;
+            justify-content: center; font-family: "Tahoma", sans-serif; 
+            user-select: none; padding: 10px;
         }
         
         .window { 
             width: 100%; max-width: 980px; background: var(--win-gray); 
             border: 2px solid; border-color: var(--win-white) var(--win-black) var(--win-black) var(--win-white); 
             padding: 2px; box-shadow: 3px 3px 0 var(--win-black); display: flex; flex-direction: column;
-            height: auto; /* Desktop: Ajuste automático al contenido */
+            max-height: 98vh;
         }
 
         .title-bar { 
             background: linear-gradient(90deg, var(--win-blue), var(--win-blue-light)); 
             padding: 3px 8px; display: flex; justify-content: space-between; 
-            color: white; font-weight: bold; font-size: 12px; cursor: default; flex-shrink: 0;
+            color: white; font-weight: bold; font-size: 12px; flex-shrink: 0;
         }
         
-        .main-layout { display: flex; padding: 10px; gap: 10px; }
+        .main-layout { display: flex; padding: 10px; gap: 10px; overflow: hidden; }
 
-        /* Ajuste para móviles */
+        /* Adaptación Móvil Extrema */
         @media (max-width: 850px) {
-            body { height: 100dvh; padding: 0; align-items: stretch; }
-            .window { max-height: 100dvh; height: 100%; border: none; box-shadow: none; }
-            .main-layout { flex-direction: column; padding: 5px; gap: 5px; overflow-y: auto; flex-grow: 1; }
+            body { padding: 0; height: 100dvh; align-items: stretch; }
+            .window { max-height: 100dvh; height: 100%; border: none; }
+            .main-layout { 
+                flex-direction: column; padding: 5px; gap: 5px; 
+                overflow-y: auto; touch-action: pan-y; /* Solo permite scroll dentro de la app */
+            }
             .controls { width: 100% !important; order: 2; }
-            .viewport { height: 45vh !important; order: 1; min-height: 200px; flex-shrink: 0; }
-            fieldset { padding: 8px !important; }
+            .viewport { height: 40dvh !important; order: 1; min-height: 200px; flex-shrink: 0; }
         }
 
         .controls { width: 330px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
         
-        fieldset { border: 2px solid; border-color: var(--win-dark-gray) var(--win-white) var(--win-white) var(--win-dark-gray); padding: 12px; font-size: 11px; color: var(--win-black); }
-        legend { background: var(--win-gray); padding: 0 5px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: var(--win-blue); }
+        fieldset { border: 2px solid; border-color: var(--win-dark-gray) var(--win-white) var(--win-white) var(--win-dark-gray); padding: 10px; font-size: 11px; color: var(--win-black); }
+        legend { background: var(--win-gray); padding: 0 5px; font-weight: bold; text-transform: uppercase; color: var(--win-blue); }
 
         .dir-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; justify-items: center; margin: 5px 0; }
         .dir-pixel { 
             width: 35px; height: 35px; background: var(--win-dark-gray); 
             border: 2px solid var(--win-black); cursor: pointer; 
             display: flex; align-items: center; justify-content: center; 
-            font-size: 18px; color: var(--win-white); font-weight: bold;
-            image-rendering: pixelated;
+            font-size: 18px; color: var(--win-white);
         }
         .dir-pixel.active { background: var(--win-black); border-color: var(--glitch-cian); color: var(--glitch-cian); box-shadow: 0 0 5px var(--glitch-cian); }
         
@@ -63,35 +70,35 @@
             width: 35px; height: 35px; background: var(--win-black); 
             border: 2px solid var(--win-white); cursor: pointer;
             display: flex; align-items: center; justify-content: center; 
-            font-size: 8px; color: var(--win-white); text-transform: uppercase; font-weight: bold;
+            font-size: 8px; color: var(--win-white); font-weight: bold;
         }
 
         input[type="range"]#threshold {
             -webkit-appearance: none; appearance: none;
             width: 100%; height: 20px; background: var(--win-black);
-            border: 2px inset var(--win-white); cursor: pointer;
+            border: 2px inset var(--win-white); 
             background-image: linear-gradient(90deg, #f00 0%, #0f0 20%, #00f 40%, #ff0 60%, #f0f 80%, #0ff 100%);
             background-size: var(--thr-pc, 50%) 100%; background-repeat: repeat-x;
         }
         input[type="range"]#threshold::-webkit-slider-thumb {
             -webkit-appearance: none; appearance: none;
-            height: 24px; width: 10px; background: var(--win-gray);
+            height: 24px; width: 12px; background: var(--win-gray);
             border: 2px solid; border-color: var(--win-white) var(--win-black) var(--win-black) var(--win-white);
         }
 
         .viewport { 
             flex-grow: 1; background: #000; border: 4px inset var(--win-white); 
-            height: 550px; display: flex; align-items: center; justify-content: center; 
+            height: 500px; display: flex; align-items: center; justify-content: center; 
             overflow: hidden; position: relative; 
         }
         canvas { image-rendering: pixelated; max-width: 100%; max-height: 100%; object-fit: contain; }
         #vSrc { display: none; }
 
         .win-btn { 
-            padding: 8px; font-size: 11px; font-weight: bold; text-transform: uppercase;
+            padding: 8px; font-size: 10px; font-weight: bold; text-transform: uppercase;
             background: var(--win-gray); border: 2px solid; 
             border-color: var(--win-white) var(--win-black) var(--win-black) var(--win-white); 
-            cursor: pointer; width: 100%; margin-bottom: 4px; color: var(--win-black);
+            cursor: pointer; width: 100%; color: var(--win-black);
         }
         .win-btn:active { border-color: var(--win-black) var(--win-white) var(--win-white) var(--win-black); padding: 9px 7px 7px 9px; }
         
@@ -110,10 +117,14 @@
 
 <div class="window">
     <div class="title-bar">
-        <span>KIMSORT.exe - v5.0 Gold</span>
+        <span>KIMSORT.exe - v5.1 LOCKDOWN</span>
         <span>[ 03_Desktop_Shell ]</span>
     </div>
     <div class="main-layout">
+        <div class="viewport">
+            <canvas id="mainCanvas"></canvas>
+            <video id="vSrc" loop muted playsinline crossorigin="anonymous"></video>
+        </div>
         <div class="controls">
             <fieldset>
                 <legend>Data Source</legend>
@@ -128,7 +139,7 @@
                     <option value="saturation">Saturation</option>
                     <option value="red">Red Channel</option>
                 </select>
-                <div style="display:flex; flex-direction:column; gap:4px">
+                <div style="display:flex; flex-direction:column; gap:2px">
                     <label style="font-size:10px">Threshold: <span id="threshVal" style="font-weight:bold">120</span></label>
                     <input type="range" id="threshold" min="0" max="255" value="120" oninput="updateThreshVisual(this.value)">
                 </div>
@@ -150,15 +161,17 @@
             <button class="win-btn" onclick="restoreCurrent()">RESTORE SYSTEM</button>
             <button class="win-btn btn-snap" onclick="snapFrame()">SNAP RENDER</button>
         </div>
-        <div class="viewport">
-            <canvas id="mainCanvas"></canvas>
-            <video id="vSrc" loop muted playsinline crossorigin="anonymous"></video>
-        </div>
     </div>
-    <div class="status-bar"><span id="status">KIMSORT Ready.</span><span>KIM-CORE v5.0</span></div>
+    <div class="status-bar"><span id="status">KIMSORT Ready.</span><span>KIM-CORE v5.1</span></div>
 </div>
 
 <script>
+    // --- BLOQUEO DE GESTOS DEL NAVEGADOR ---
+    document.addEventListener('touchmove', function(e) {
+        if (e.target.closest('.main-layout')) return; // Permitir scroll interno
+        e.preventDefault();
+    }, { passive: false });
+
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('keydown', e => {
         if (e.key === "F12" || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'u')) e.preventDefault();
