@@ -1,319 +1,176 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KIMSORT - v5.0 Gold Edition</title>
-    <style>
-        :root {
-            --win-gray: #c0c0c0; --win-white: #ffffff; --win-dark-gray: #808080;
-            --win-black: #000000; --win-blue: #000080; --win-blue-light: #1084d0;
-            --glitch-fucsia: #ff00ff; --glitch-cian: #00ffff;
-        }
-
-        * { box-sizing: border-box; }
-
-        body { 
-            background-color: #008080; margin: 0; display: flex; align-items: center; 
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KIMSORT - v5.0 Gold Edition</title>
+<style>
+:root {
+@@ -12,20 +11,13 @@
+}
+body { 
+background-color: #008080; margin: 0; display: flex; align-items: center; 
             justify-content: center; min-height: 100vh; font-family: "Tahoma", sans-serif; 
-            user-select: none; overflow: hidden; padding: 5px;
-        }
-        
-        .window { 
-            width: 100%; max-width: 980px; background: var(--win-gray); 
-            border: 2px solid; border-color: var(--win-white) var(--win-black) var(--win-black) var(--win-white); 
-            padding: 2px; box-shadow: 3px 3px 0 var(--win-black); display: flex; flex-direction: column;
-        }
+            user-select: none; overflow-x: hidden; 
+            justify-content: center; height: 100vh; font-family: "Tahoma", sans-serif; 
+            user-select: none; overflow: hidden; 
+}
 
-        .title-bar { 
-            background: linear-gradient(90deg, var(--win-blue), var(--win-blue-light)); 
-            padding: 3px 8px; display: flex; justify-content: space-between; 
-            color: white; font-weight: bold; font-size: 12px; cursor: default;
-        }
+.window { width: 980px; background: var(--win-gray); border: 2px solid; border-color: var(--win-white) var(--win-black) var(--win-black) var(--win-white); padding: 2px; box-shadow: 3px 3px 0 var(--win-black); }
         
-        .main-layout { display: flex; padding: 10px; gap: 10px; }
-
-        /* Ajuste para móviles */
-        @media (max-width: 850px) {
-            body { overflow-y: auto; align-items: flex-start; }
-            .main-layout { flex-direction: column; padding: 5px; }
+        @media (max-width: 980px) {
+            .window { width: 95vw; }
+            .main-layout { flex-direction: column; }
             .controls { width: 100% !important; }
-            .viewport { height: 350px !important; order: -1; }
-            .window { max-width: 100%; box-shadow: none; }
+            .viewport { height: 400px !important; }
         }
 
-        .controls { width: 330px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+.title-bar { background: linear-gradient(90deg, var(--win-blue), var(--win-blue-light)); padding: 3px 5px; display: flex; justify-content: space-between; color: white; font-weight: bold; font-size: 12px; cursor: default; }
         
-        fieldset { border: 2px solid; border-color: var(--win-dark-gray) var(--win-white) var(--win-white) var(--win-dark-gray); padding: 12px; font-size: 11px; color: var(--win-black); }
-        legend { background: var(--win-gray); padding: 0 5px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: var(--win-blue); }
+.main-layout { display: flex; padding: 10px; gap: 10px; }
+.controls { width: 330px; display: flex; flex-direction: column; gap: 8px; }
 
-        .dir-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; justify-items: center; margin: 10px 0; position: relative; }
-        .dir-pixel { 
-            width: 35px; height: 35px; background: var(--win-dark-gray); 
-            border: 2px solid var(--win-black); cursor: pointer; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 18px; color: var(--win-white); font-weight: bold;
-            position: relative; transition: none; image-rendering: pixelated;
-        }
-        .dir-pixel.active { background: var(--win-black); border-color: var(--glitch-cian); color: var(--glitch-cian); box-shadow: 0 0 5px var(--glitch-cian); }
-        
-        #btn-up.active::after { content: ''; position: absolute; bottom: -6px; left: 4px; right: 4px; height: 6px; background: var(--glitch-cian); }
-        #btn-down.active::after { content: ''; position: absolute; top: -6px; left: 4px; right: 4px; height: 6px; background: var(--glitch-cian); }
-        #btn-left.active::after { content: ''; position: absolute; right: -6px; top: 4px; bottom: 4px; width: 6px; background: var(--glitch-cian); }
-        #btn-right.active::after { content: ''; position: absolute; left: -6px; top: 4px; bottom: 4px; width: 6px; background: var(--glitch-cian); }
-
-        .center-pixel { 
-            width: 35px; height: 35px; background: var(--win-black); 
-            border: 2px solid var(--win-white); cursor: pointer;
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 8px; color: var(--win-white); text-transform: uppercase; font-weight: bold;
-        }
+@@ -53,23 +45,29 @@
+display: flex; align-items: center; justify-content: center; 
+font-size: 8px; color: var(--win-white); text-transform: uppercase; font-weight: bold;
+}
         .center-pixel:hover { color: var(--glitch-fucsia); text-shadow: 1px 0 var(--glitch-cian); border-color: var(--glitch-cian); }
 
-        /* Corrección de la propiedad appearance para VS Code */
-        input[type="range"]#threshold {
-            -webkit-appearance: none; 
-            appearance: none; 
-            width: 100%; height: 22px; background: var(--win-black);
+input[type="range"]#threshold {
+-webkit-appearance: none; width: 100%; height: 22px; background: var(--win-black);
+            border: 2px inset var(--win-white); cursor: pointer;
             border: 2px inset var(--win-white); cursor: pointer; image-rendering: pixelated;
-            background-image: linear-gradient(90deg, #f00 0%, #0f0 20%, #00f 40%, #ff0 60%, #f0f 80%, #0ff 100%);
-            background-size: var(--thr-pc, 50%) 100%; background-repeat: repeat-x;
-        }
+background-image: linear-gradient(90deg, #f00 0%, #0f0 20%, #00f 40%, #ff0 60%, #f0f 80%, #0ff 100%);
+background-size: var(--thr-pc, 50%) 100%; background-repeat: repeat-x;
+}
         input[type="range"]#threshold::-webkit-slider-thumb {
-            -webkit-appearance: none; 
-            appearance: none;
-            height: 26px; width: 10px; background: var(--win-gray);
+            -webkit-appearance: none; height: 26px; width: 10px; background: var(--win-gray);
             border: 2px solid; border-color: var(--win-white) var(--win-black) var(--win-black) var(--win-white);
         }
 
-        .viewport { flex-grow: 1; background: #000; border: 4px inset var(--win-white); height: 550px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
-        canvas { image-rendering: pixelated; max-width: 100%; max-height: 100%; object-fit: contain; }
-        #vSrc { display: none; }
+.viewport { flex-grow: 1; background: #000; border: 4px inset var(--win-white); height: 550px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+canvas { image-rendering: pixelated; max-width: 100%; max-height: 100%; }
+#vSrc { display: none; }
 
-        .win-btn { 
+.win-btn { 
+            padding: 8px; font-size: 11px; font-weight: bold; text-transform: uppercase;
             padding: 8px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;
-            background: var(--win-gray); border: 2px solid; 
-            border-color: var(--win-white) var(--win-black) var(--win-black) var(--win-white); 
-            cursor: pointer; width: 100%; margin-bottom: 5px; color: var(--win-black);
+background: var(--win-gray); border: 2px solid; 
+border-color: var(--win-white) var(--win-black) var(--win-black) var(--win-white); 
+cursor: pointer; width: 100%; margin-bottom: 5px; color: var(--win-black);
             image-rendering: pixelated;
-        }
-        .win-btn:active { border-color: var(--win-black) var(--win-white) var(--win-white) var(--win-black); padding: 9px 7px 7px 9px; }
-        
-        .btn-chaos { 
-            color: var(--win-white); text-shadow: 1px 1px 0 #000;
-            background-image: linear-gradient(45deg, #f00 25%, #0f0 25%, #0f0 50%, #00f 50%, #00f 75%, #ff0 75%, #ff0 100%);
-            background-size: 6px 6px;
-        }
+}
+.win-btn:active { border-color: var(--win-black) var(--win-white) var(--win-white) var(--win-black); padding: 9px 7px 7px 9px; }
+
+@@ -78,24 +76,26 @@
+background-image: linear-gradient(45deg, #f00 25%, #0f0 25%, #0f0 50%, #00f 50%, #00f 75%, #ff0 75%, #ff0 100%);
+background-size: 6px 6px;
+}
         .btn-snap { background: #444; color: #0ff; border-color: #888; margin-top: 5px; }
 
-        .status-bar { border: 1px solid var(--win-dark-gray); padding: 3px 5px; font-size: 10px; margin-top: 4px; background: var(--win-gray); display: flex; justify-content: space-between; }
-        .eff-select { background: white; border: 1px solid var(--win-black); font-size: 11px; padding: 2px; width: 100%; margin-bottom: 8px; }
-    </style>
+.status-bar { border: 1px solid var(--win-dark-gray); padding: 3px 5px; font-size: 10px; margin-top: 4px; background: var(--win-gray); display: flex; justify-content: space-between; }
+.eff-select { background: white; border: 1px solid var(--win-black); font-size: 11px; padding: 2px; width: 100%; margin-bottom: 8px; }
+</style>
 </head>
+<body oncontextmenu="return false;">
 <body>
 
 <div class="window">
-    <div class="title-bar">
+<div class="title-bar">
+        <span>KIMSORT - v5.0 Gold Edition</span>
+        <span></span>
         <span>KIMSORT.exe - v5.0 Gold</span>
         <span>[ 03_Desktop_Shell ]</span>
-    </div>
-    <div class="main-layout">
-        <div class="controls">
-            <fieldset>
-                <legend>Data Source</legend>
-                <input type="file" id="fIn" accept="image/*, video/mp4" style="display:none" onchange="loadFile(this.files[0])">
-                <button class="win-btn" onclick="document.getElementById('fIn').click()">IMPORT FILE</button>
-                <p style="font-size: 9px; color: #444; margin: 4px 0 0 0;">MEM LOCK: 2.00 MB</p>
-            </fieldset>
-
-            <fieldset>
-                <legend>KIM-Algorithm</legend>
-                <select id="effectType" class="eff-select">
-                    <option value="brightness">Brightness</option>
-                    <option value="saturation">Saturation</option>
-                    <option value="red">Red Channel</option>
-                </select>
-                <div style="display:flex; flex-direction:column; gap:4px">
-                    <label style="font-size:10px">Threshold: <span id="threshVal" style="font-weight:bold">120</span></label>
-                    <input type="range" id="threshold" min="0" max="255" value="120" oninput="updateThreshVisual(this.value)">
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>Sort Vector</legend>
-                <div class="dir-grid">
-                    <div></div><button class="dir-pixel" id="btn-up" onclick="toggleDir('up')">↑</button><div></div>
-                    <button class="dir-pixel" id="btn-left" onclick="toggleDir('left')">←</button>
-                    <div class="center-pixel" onclick="processFrame()">KIM</div>
-                    <button class="dir-pixel" id="btn-right" onclick="toggleDir('right')">→</button>
-                    <div></div><button class="dir-pixel" id="btn-down" onclick="toggleDir('down')">↓</button><div></div>
-                </div>
-            </fieldset>
-
-            <button class="win-btn" id="pBtn" onclick="applyProcess()">EXECUTE / PLAY</button>
-            <button class="win-btn btn-chaos" onclick="chaosRandom()">CHAOS SHUFFLE</button>
-            <button class="win-btn" onclick="restoreCurrent()">RESTORE SYSTEM</button>
-            <button class="win-btn btn-snap" onclick="snapFrame()">SNAP RENDER</button>
-        </div>
-        <div class="viewport">
-            <canvas id="mainCanvas"></canvas>
-            <video id="vSrc" loop muted playsinline crossorigin="anonymous"></video>
-        </div>
-    </div>
-    <div class="status-bar"><span id="status">KIMSORT Ready.</span><span>KIM-CORE v5.0</span></div>
 </div>
+<div class="main-layout">
+<div class="controls">
+<fieldset>
+<legend>Data Source</legend>
+<input type="file" id="fIn" accept="image/*, video/mp4" style="display:none" onchange="loadFile(this.files[0])">
+<button class="win-btn" onclick="document.getElementById('fIn').click()">IMPORT FILE</button>
+                <p style="font-size: 9px; color: #444; margin: 4px 0 0 0;">MEM LOCK: 2.00 MB</p>
+</fieldset>
 
-<script>
-    // --- PROTOCOLO DE SEGURIDAD ---
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.addEventListener('keydown', e => {
-        if (e.key === "F12" || 
-           (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
-           (e.ctrlKey && e.key === 'u')) {
-            e.preventDefault();
-            return false;
-        }
-    });
+<fieldset>
+@@ -125,7 +125,7 @@
+<button class="win-btn" id="pBtn" onclick="applyProcess()">EXECUTE / PLAY</button>
+<button class="win-btn btn-chaos" onclick="chaosRandom()">CHAOS SHUFFLE</button>
+<button class="win-btn" onclick="restoreCurrent()">RESTORE SYSTEM</button>
+            <button class="win-btn" style="background:#444; color:#0ff;" onclick="snapFrame()">SNAP RENDER</button>
+            <button class="win-btn btn-snap" onclick="snapFrame()">SNAP RENDER</button>
+</div>
+<div class="viewport">
+<canvas id="mainCanvas"></canvas>
+@@ -147,7 +147,7 @@
+}
+});
 
+    // --- ENGINE CORE (LOGICA ORIGINAL) ---
     // --- ENGINE CORE ---
-    const canvas = document.getElementById('mainCanvas');
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    const video = document.getElementById('vSrc');
-    const pBtn = document.getElementById('pBtn');
-    let currentOriginal = new Image();
-    let activeDirs = { up: false, down: false, left: false, right: false };
-    let isVideo = false; let isPlaying = false; let animFrame = null;
+const canvas = document.getElementById('mainCanvas');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+const video = document.getElementById('vSrc');
+@@ -164,6 +164,7 @@
+};
 
-    window.onload = () => {
-        updateThreshVisual(120);
-        currentOriginal.crossOrigin = "Anonymous";
-        currentOriginal.src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800"; 
-        currentOriginal.onload = () => restoreCurrent();
-    };
+function toggleDir(dir) {
+        // CORRECCIÓN: Ahora solo marca la dirección sin ejecutar el proceso.
+activeDirs[dir] = !activeDirs[dir];
+document.getElementById(`btn-${dir}`).classList.toggle('active');
+updateStatus(`Vector ${dir.toUpperCase()} ${activeDirs[dir] ? 'ACTIVE' : 'INACTIVE'}`);
+@@ -172,6 +173,7 @@
+function updateThreshVisual(val) {
+document.getElementById('threshVal').innerText = val;
+document.getElementById('threshold').style.setProperty('--thr-pc', `${(val/255)*100}%`);
+        // Opcional: Si quieres que el threshold tampoco dispare el efecto, comenta la línea de abajo.
+if(!isVideo && isPlaying) processFrame(); 
+}
 
-    function toggleDir(dir) {
-        activeDirs[dir] = !activeDirs[dir];
-        document.getElementById(`btn-${dir}`).classList.toggle('active');
-        updateStatus(`Vector ${dir.toUpperCase()} ${activeDirs[dir] ? 'ACTIVE' : 'INACTIVE'}`);
-    }
-
-    function updateThreshVisual(val) {
-        document.getElementById('threshVal').innerText = val;
-        document.getElementById('threshold').style.setProperty('--thr-pc', `${(val/255)*100}%`);
-        if(!isVideo && isPlaying) processFrame(); 
-    }
-
-    function loadFile(file) {
-        if (!file || file.size > 2 * 1024 * 1024) { updateStatus("ERR: SIZE > 2MB", true); return; }
-        resetEngine();
-        const url = URL.createObjectURL(file);
-        if (file.type.includes('video')) {
-            isVideo = true; video.src = url;
-            video.onloadedmetadata = () => { canvas.width = video.videoWidth; canvas.height = video.videoHeight; video.currentTime = 0.1; };
+@@ -182,10 +184,10 @@
+if (file.type.includes('video')) {
+isVideo = true; video.src = url;
+video.onloadedmetadata = () => { canvas.width = video.videoWidth; canvas.height = video.videoHeight; video.currentTime = 0.1; };
+            video.onseeked = () => { ctx.drawImage(video, 0, 0); updateStatus("VIDEO LOADED."); pBtn.innerText = "PLAY VIDEO"; };
             video.onseeked = () => { ctx.drawImage(video, 0, 0); updateStatus("KIM-VIDEO LOADED."); pBtn.innerText = "PLAY VIDEO"; };
-        } else {
-            const newImg = new Image();
+} else {
+const newImg = new Image();
+            newImg.onload = () => { currentOriginal = newImg; restoreCurrent(); updateStatus("IMAGE LOADED."); };
             newImg.onload = () => { currentOriginal = newImg; restoreCurrent(); updateStatus("KIM-IMG LOADED."); };
-            newImg.src = url;
-        }
-    }
-
-    function resetEngine() { isPlaying = false; video.pause(); video.src = ""; if (animFrame) cancelAnimationFrame(animFrame); }
-
-    function restoreCurrent() {
-        if (isVideo) { video.pause(); isPlaying = false; video.currentTime = 0.1; ctx.drawImage(video, 0, 0); pBtn.innerText = "PLAY VIDEO"; }
-        else { canvas.width = currentOriginal.width; canvas.height = currentOriginal.height; ctx.drawImage(currentOriginal, 0, 0); pBtn.innerText = "EXECUTE SORT"; }
-        updateStatus("SYSTEM RESTORED.");
-    }
-
-    function updateStatus(msg, err = false) { 
-        const s = document.getElementById('status');
-        s.innerText = "STATUS: " + msg; s.style.color = err ? "red" : "black";
-    }
-
-    function getVal(r, g, b, type) {
-        if (type === 'brightness') return (r + g + b) / 3;
-        if (type === 'red') return r;
-        return Math.max(r, g, b) === 0 ? 0 : ((Math.max(r, g, b) - Math.min(r, g, b)) / Math.max(r, g, b)) * 255;
-    }
-
-    function applyProcess() {
-        if (isVideo) {
-            isPlaying = !isPlaying;
-            if (isPlaying) { video.play(); renderLoop(); } 
-            else { video.pause(); if (animFrame) cancelAnimationFrame(animFrame); }
-            pBtn.innerText = isPlaying ? "STOP KIMSORT" : "PLAY VIDEO";
+newImg.src = url;
+}
+}
+@@ -215,7 +217,10 @@
+if (isPlaying) { video.play(); renderLoop(); } 
+else { video.pause(); if (animFrame) cancelAnimationFrame(animFrame); }
+pBtn.innerText = isPlaying ? "STOP KIMSORT" : "PLAY VIDEO";
         } else { processFrame(); }
-    }
+        } else { 
+            // En imágenes estáticas, procesar una vez al pulsar el botón
+            processFrame(); 
+        }
+}
 
-    function renderLoop() {
-        if (isVideo) ctx.drawImage(video, 0, 0);
-        processFrame();
-        if (isVideo && isPlaying) animFrame = requestAnimationFrame(renderLoop);
-    }
-
-    function processFrame() {
-        const type = document.getElementById('effectType').value;
-        const thresh = parseInt(document.getElementById('threshold').value);
-        const noDir = !activeDirs.up && !activeDirs.down && !activeDirs.left && !activeDirs.right;
+function renderLoop() {
+@@ -228,6 +233,9 @@
+const type = document.getElementById('effectType').value;
+const thresh = parseInt(document.getElementById('threshold').value);
+const noDir = !activeDirs.up && !activeDirs.down && !activeDirs.left && !activeDirs.right;
         
         updateStatus("KIMSORT EXECUTING...");
         
-        if (activeDirs.left || activeDirs.right || noDir) runSort('horizontal', thresh, type, activeDirs.left ? -1 : 1, noDir);
-        if (activeDirs.up || activeDirs.down) runSort('vertical', thresh, type, activeDirs.up ? -1 : 1, false);
-    }
+if (activeDirs.left || activeDirs.right || noDir) runSort('horizontal', thresh, type, activeDirs.left ? -1 : 1, noDir);
+if (activeDirs.up || activeDirs.down) runSort('vertical', thresh, type, activeDirs.up ? -1 : 1, false);
+}
+@@ -276,10 +284,12 @@
+}
 
-    function runSort(axis, thresh, type, dir, isFullRandom) {
-        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const p = imgData.data; const w = canvas.width, h = canvas.height;
-        const isVert = axis === 'vertical', outer = isVert ? w : h, inner = isVert ? h : w;
-        for (let i = 0; i < outer; i++) {
-            let pixels = [];
-            for (let j = 0; j < inner; j++) {
-                const idx = isVert ? (j * w + i) * 4 : (i * w + j) * 4;
-                pixels.push({ r: p[idx], g: p[idx+1], b: p[idx+2], a: p[idx+3], val: getVal(p[idx], p[idx+1], p[idx+2], type) });
-            }
-            let start = 0;
-            while (start < inner) {
-                while (start < inner && pixels[start].val < thresh) start++;
-                let end = start; while (end < inner && pixels[end].val >= thresh) end++;
-                if (end > start) {
-                    const seg = pixels.slice(start, end);
-                    if (isFullRandom) seg.sort(() => Math.random() - 0.5);
-                    else seg.sort((a, b) => dir > 0 ? a.val - b.val : b.val - a.val);
-                    for (let k = 0; k < seg.length; k++) pixels[start + k] = seg[k];
-                }
-                start = end;
-            }
-            for (let j = 0; j < inner; j++) {
-                const idx = isVert ? (j * w + i) * 4 : (i * w + j) * 4;
-                p[idx] = pixels[j].r; p[idx+1] = pixels[j].g; p[idx+2] = pixels[j].b; p[idx+3] = pixels[j].a;
-            }
-        }
-        ctx.putImageData(imgData, 0, 0);
-    }
-
-    function chaosRandom() {
-        const effects = ['brightness', 'saturation', 'red'];
-        document.getElementById('effectType').value = effects[Math.floor(Math.random() * effects.length)];
-        updateThreshVisual(Math.floor(Math.random() * 200));
-        ['up', 'down', 'left', 'right'].forEach(d => { 
-            if(Math.random() > 0.5) { 
-                if(!activeDirs[d]) { activeDirs[d] = true; document.getElementById(`btn-${d}`).classList.add('active'); }
-            } else {
-                if(activeDirs[d]) { activeDirs[d] = false; document.getElementById(`btn-${d}`).classList.remove('active'); }
-            }
-        });
-    }
-
-    function snapFrame() {
+function snapFrame() {
         updateStatus("KIM-SNAP IN PROGRESS...");
-        const link = document.createElement('a');
+const link = document.createElement('a');
+        link.download = `KIMSORT_GOLD_${Date.now()}.png`;
         link.download = `KIMSORT_RENDER_${Date.now()}.png`;
-        link.href = canvas.toDataURL("image/png");
-        link.click();
+link.href = canvas.toDataURL("image/png");
+link.click();
         setTimeout(() => updateStatus("KIMSORT SNAP SAVED."), 1000);
-    }
+}
 </script>
 </body>
-</html>
