@@ -16,30 +16,32 @@
         body { 
             background-color: #008080; margin: 0; display: flex; align-items: center; 
             justify-content: center; min-height: 100vh; font-family: "Tahoma", sans-serif; 
-            user-select: none; overflow: hidden; padding: 5px;
+            user-select: none; overflow: hidden; padding: 10px;
         }
         
         .window { 
             width: 100%; max-width: 980px; background: var(--win-gray); 
             border: 2px solid; border-color: var(--win-white) var(--win-black) var(--win-black) var(--win-white); 
             padding: 2px; box-shadow: 3px 3px 0 var(--win-black); display: flex; flex-direction: column;
+            height: auto; /* Desktop: Ajuste automático al contenido */
         }
 
         .title-bar { 
             background: linear-gradient(90deg, var(--win-blue), var(--win-blue-light)); 
             padding: 3px 8px; display: flex; justify-content: space-between; 
-            color: white; font-weight: bold; font-size: 12px; cursor: default;
+            color: white; font-weight: bold; font-size: 12px; cursor: default; flex-shrink: 0;
         }
         
         .main-layout { display: flex; padding: 10px; gap: 10px; }
 
         /* Ajuste para móviles */
         @media (max-width: 850px) {
-            body { overflow-y: auto; align-items: flex-start; }
-            .main-layout { flex-direction: column; padding: 5px; }
-            .controls { width: 100% !important; }
-            .viewport { height: 350px !important; order: -1; }
-            .window { max-width: 100%; box-shadow: none; }
+            body { height: 100dvh; padding: 0; align-items: stretch; }
+            .window { max-height: 100dvh; height: 100%; border: none; box-shadow: none; }
+            .main-layout { flex-direction: column; padding: 5px; gap: 5px; overflow-y: auto; flex-grow: 1; }
+            .controls { width: 100% !important; order: 2; }
+            .viewport { height: 45vh !important; order: 1; min-height: 200px; flex-shrink: 0; }
+            fieldset { padding: 8px !important; }
         }
 
         .controls { width: 330px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
@@ -47,55 +49,49 @@
         fieldset { border: 2px solid; border-color: var(--win-dark-gray) var(--win-white) var(--win-white) var(--win-dark-gray); padding: 12px; font-size: 11px; color: var(--win-black); }
         legend { background: var(--win-gray); padding: 0 5px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: var(--win-blue); }
 
-        .dir-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; justify-items: center; margin: 10px 0; position: relative; }
+        .dir-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; justify-items: center; margin: 5px 0; }
         .dir-pixel { 
             width: 35px; height: 35px; background: var(--win-dark-gray); 
             border: 2px solid var(--win-black); cursor: pointer; 
             display: flex; align-items: center; justify-content: center; 
             font-size: 18px; color: var(--win-white); font-weight: bold;
-            position: relative; transition: none; image-rendering: pixelated;
+            image-rendering: pixelated;
         }
         .dir-pixel.active { background: var(--win-black); border-color: var(--glitch-cian); color: var(--glitch-cian); box-shadow: 0 0 5px var(--glitch-cian); }
         
-        #btn-up.active::after { content: ''; position: absolute; bottom: -6px; left: 4px; right: 4px; height: 6px; background: var(--glitch-cian); }
-        #btn-down.active::after { content: ''; position: absolute; top: -6px; left: 4px; right: 4px; height: 6px; background: var(--glitch-cian); }
-        #btn-left.active::after { content: ''; position: absolute; right: -6px; top: 4px; bottom: 4px; width: 6px; background: var(--glitch-cian); }
-        #btn-right.active::after { content: ''; position: absolute; left: -6px; top: 4px; bottom: 4px; width: 6px; background: var(--glitch-cian); }
-
         .center-pixel { 
             width: 35px; height: 35px; background: var(--win-black); 
             border: 2px solid var(--win-white); cursor: pointer;
             display: flex; align-items: center; justify-content: center; 
             font-size: 8px; color: var(--win-white); text-transform: uppercase; font-weight: bold;
         }
-        .center-pixel:hover { color: var(--glitch-fucsia); text-shadow: 1px 0 var(--glitch-cian); border-color: var(--glitch-cian); }
 
-        /* Corrección de la propiedad appearance para VS Code */
         input[type="range"]#threshold {
-            -webkit-appearance: none; 
-            appearance: none; 
-            width: 100%; height: 22px; background: var(--win-black);
-            border: 2px inset var(--win-white); cursor: pointer; image-rendering: pixelated;
+            -webkit-appearance: none; appearance: none;
+            width: 100%; height: 20px; background: var(--win-black);
+            border: 2px inset var(--win-white); cursor: pointer;
             background-image: linear-gradient(90deg, #f00 0%, #0f0 20%, #00f 40%, #ff0 60%, #f0f 80%, #0ff 100%);
             background-size: var(--thr-pc, 50%) 100%; background-repeat: repeat-x;
         }
         input[type="range"]#threshold::-webkit-slider-thumb {
-            -webkit-appearance: none; 
-            appearance: none;
-            height: 26px; width: 10px; background: var(--win-gray);
+            -webkit-appearance: none; appearance: none;
+            height: 24px; width: 10px; background: var(--win-gray);
             border: 2px solid; border-color: var(--win-white) var(--win-black) var(--win-black) var(--win-white);
         }
 
-        .viewport { flex-grow: 1; background: #000; border: 4px inset var(--win-white); height: 550px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        .viewport { 
+            flex-grow: 1; background: #000; border: 4px inset var(--win-white); 
+            height: 550px; display: flex; align-items: center; justify-content: center; 
+            overflow: hidden; position: relative; 
+        }
         canvas { image-rendering: pixelated; max-width: 100%; max-height: 100%; object-fit: contain; }
         #vSrc { display: none; }
 
         .win-btn { 
-            padding: 8px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;
+            padding: 8px; font-size: 11px; font-weight: bold; text-transform: uppercase;
             background: var(--win-gray); border: 2px solid; 
             border-color: var(--win-white) var(--win-black) var(--win-black) var(--win-white); 
-            cursor: pointer; width: 100%; margin-bottom: 5px; color: var(--win-black);
-            image-rendering: pixelated;
+            cursor: pointer; width: 100%; margin-bottom: 4px; color: var(--win-black);
         }
         .win-btn:active { border-color: var(--win-black) var(--win-white) var(--win-white) var(--win-black); padding: 9px 7px 7px 9px; }
         
@@ -104,10 +100,10 @@
             background-image: linear-gradient(45deg, #f00 25%, #0f0 25%, #0f0 50%, #00f 50%, #00f 75%, #ff0 75%, #ff0 100%);
             background-size: 6px 6px;
         }
-        .btn-snap { background: #444; color: #0ff; border-color: #888; margin-top: 5px; }
+        .btn-snap { background: #444; color: #0ff; border-color: #888; }
 
-        .status-bar { border: 1px solid var(--win-dark-gray); padding: 3px 5px; font-size: 10px; margin-top: 4px; background: var(--win-gray); display: flex; justify-content: space-between; }
-        .eff-select { background: white; border: 1px solid var(--win-black); font-size: 11px; padding: 2px; width: 100%; margin-bottom: 8px; }
+        .status-bar { border: 1px solid var(--win-dark-gray); padding: 3px 5px; font-size: 10px; background: var(--win-gray); display: flex; justify-content: space-between; flex-shrink: 0; }
+        .eff-select { background: white; border: 1px solid var(--win-black); font-size: 11px; padding: 2px; width: 100%; margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -123,7 +119,6 @@
                 <legend>Data Source</legend>
                 <input type="file" id="fIn" accept="image/*, video/mp4" style="display:none" onchange="loadFile(this.files[0])">
                 <button class="win-btn" onclick="document.getElementById('fIn').click()">IMPORT FILE</button>
-                <p style="font-size: 9px; color: #444; margin: 4px 0 0 0;">MEM LOCK: 2.00 MB</p>
             </fieldset>
 
             <fieldset>
@@ -164,18 +159,11 @@
 </div>
 
 <script>
-    // --- PROTOCOLO DE SEGURIDAD ---
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('keydown', e => {
-        if (e.key === "F12" || 
-           (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
-           (e.ctrlKey && e.key === 'u')) {
-            e.preventDefault();
-            return false;
-        }
+        if (e.key === "F12" || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'u')) e.preventDefault();
     });
 
-    // --- ENGINE CORE ---
     const canvas = document.getElementById('mainCanvas');
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     const video = document.getElementById('vSrc');
@@ -253,19 +241,15 @@
     }
 
     function processFrame() {
-        const type = document.getElementById('effectType').value;
-        const thresh = parseInt(document.getElementById('threshold').value);
+        const type = document.getElementById('effectType').value, thresh = parseInt(document.getElementById('threshold').value);
         const noDir = !activeDirs.up && !activeDirs.down && !activeDirs.left && !activeDirs.right;
-        
         updateStatus("KIMSORT EXECUTING...");
-        
         if (activeDirs.left || activeDirs.right || noDir) runSort('horizontal', thresh, type, activeDirs.left ? -1 : 1, noDir);
         if (activeDirs.up || activeDirs.down) runSort('vertical', thresh, type, activeDirs.up ? -1 : 1, false);
     }
 
     function runSort(axis, thresh, type, dir, isFullRandom) {
-        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const p = imgData.data; const w = canvas.width, h = canvas.height;
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height), p = imgData.data, w = canvas.width, h = canvas.height;
         const isVert = axis === 'vertical', outer = isVert ? w : h, inner = isVert ? h : w;
         for (let i = 0; i < outer; i++) {
             let pixels = [];
@@ -298,11 +282,9 @@
         document.getElementById('effectType').value = effects[Math.floor(Math.random() * effects.length)];
         updateThreshVisual(Math.floor(Math.random() * 200));
         ['up', 'down', 'left', 'right'].forEach(d => { 
-            if(Math.random() > 0.5) { 
-                if(!activeDirs[d]) { activeDirs[d] = true; document.getElementById(`btn-${d}`).classList.add('active'); }
-            } else {
-                if(activeDirs[d]) { activeDirs[d] = false; document.getElementById(`btn-${d}`).classList.remove('active'); }
-            }
+            activeDirs[d] = Math.random() > 0.5;
+            const btn = document.getElementById(`btn-${d}`);
+            activeDirs[d] ? btn.classList.add('active') : btn.classList.remove('active');
         });
     }
 
