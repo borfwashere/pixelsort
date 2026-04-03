@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>KIMSORT - v5.1 Lockdown</title>
+    <title>KIMSORT - v5.4 Hybrid Fixed</title>
     <style>
         :root {
             --win-gray: #c0c0c0; --win-white: #ffffff; --win-dark-gray: #808080;
@@ -14,9 +14,8 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         html, body { 
-            position: fixed; /* Bloqueo total de la posición de la página */
-            width: 100%; height: 100%; 
-            overflow: hidden; touch-action: none; /* Elimina gestos del navegador */
+            position: fixed; width: 100%; height: 100%; 
+            overflow: hidden; touch-action: none; 
         }
 
         body { 
@@ -40,84 +39,60 @@
         
         .main-layout { display: flex; padding: 10px; gap: 10px; overflow: hidden; }
 
-        /* Adaptación Móvil Extrema */
-        @media (max-width: 850px) {
-            body { padding: 0; height: 100dvh; align-items: stretch; }
-            .window { max-height: 100dvh; height: 100%; border: none; }
-            .main-layout { 
-                flex-direction: column; padding: 5px; gap: 5px; 
-                overflow-y: auto; touch-action: pan-y; /* Solo permite scroll dentro de la app */
-            }
-            .controls { width: 100% !important; order: 2; }
-            .viewport { height: 40dvh !important; order: 1; min-height: 200px; flex-shrink: 0; }
-        }
-
+        /* --- DESKTOP UI (DEFAULT) --- */
         .controls { width: 330px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+        .tabs-header { display: none; }
         
         fieldset { border: 2px solid; border-color: var(--win-dark-gray) var(--win-white) var(--win-white) var(--win-dark-gray); padding: 10px; font-size: 11px; color: var(--win-black); }
         legend { background: var(--win-gray); padding: 0 5px; font-weight: bold; text-transform: uppercase; color: var(--win-blue); }
 
-        .dir-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; justify-items: center; margin: 5px 0; }
-        .dir-pixel { 
-            width: 35px; height: 35px; background: var(--win-dark-gray); 
-            border: 2px solid var(--win-black); cursor: pointer; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 18px; color: var(--win-white);
+        /* --- MOBILE UI (TABS) --- */
+        @media (max-width: 850px) {
+            body { padding: 0; height: 100dvh; align-items: stretch; }
+            .window { max-height: 100dvh; height: 100%; border: none; }
+            .main-layout { flex-direction: column; padding: 5px; gap: 5px; overflow: hidden; flex-grow: 1; }
+            .controls { width: 100% !important; order: 2; gap: 0; }
+            .viewport { flex-grow: 1; order: 1; min-height: 200px; height: auto !important; flex-shrink: 1; }
+
+            .tabs-header { display: flex; margin-bottom: -2px; padding-left: 2px; z-index: 10; }
+            .tab-btn { 
+                padding: 4px 10px; font-size: 10px; font-weight: bold; cursor: pointer;
+                background: var(--win-gray); border: 2px solid;
+                border-color: var(--win-white) var(--win-black) var(--win-gray) var(--win-white);
+                margin-right: 2px;
+            }
+            .tab-btn.active { border-bottom: none; padding-bottom: 6px; margin-top: -2px; z-index: 11; }
+            
+            .tab-pane { display: none; border: 2px solid; border-color: var(--win-white) var(--win-black) var(--win-black) var(--win-white); padding: 5px; background: var(--win-gray); }
+            .tab-pane.active { display: block; }
+            fieldset { border: none; padding: 5px; margin: 0; }
+            legend { display: none; }
         }
+
+        .dir-grid { display: grid; grid-template-columns: repeat(3, 40px); gap: 6px; justify-content: center; margin: 5px 0; }
+        .dir-pixel { width: 38px; height: 38px; background: var(--win-dark-gray); border: 2px solid var(--win-black); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #fff; }
         .dir-pixel.active { background: var(--win-black); border-color: var(--glitch-cian); color: var(--glitch-cian); box-shadow: 0 0 5px var(--glitch-cian); }
-        
-        .center-pixel { 
-            width: 35px; height: 35px; background: var(--win-black); 
-            border: 2px solid var(--win-white); cursor: pointer;
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 8px; color: var(--win-white); font-weight: bold;
-        }
+        .center-pixel { width: 38px; height: 38px; background: var(--win-black); border: 2px solid var(--win-white); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #fff; font-weight: bold; }
 
-        input[type="range"]#threshold {
-            -webkit-appearance: none; appearance: none;
-            width: 100%; height: 20px; background: var(--win-black);
-            border: 2px inset var(--win-white); 
-            background-image: linear-gradient(90deg, #f00 0%, #0f0 20%, #00f 40%, #ff0 60%, #f0f 80%, #0ff 100%);
-            background-size: var(--thr-pc, 50%) 100%; background-repeat: repeat-x;
-        }
-        input[type="range"]#threshold::-webkit-slider-thumb {
-            -webkit-appearance: none; appearance: none;
-            height: 24px; width: 12px; background: var(--win-gray);
-            border: 2px solid; border-color: var(--win-white) var(--win-black) var(--win-black) var(--win-white);
-        }
+        input[type="range"]#threshold { -webkit-appearance: none; appearance: none; width: 100%; height: 20px; background: #000; border: 2px inset #fff; background-image: linear-gradient(90deg, #f00 0%, #0f0 20%, #00f 40%, #ff0 60%, #f0f 80%, #0ff 100%); background-size: var(--thr-pc, 50%) 100%; background-repeat: repeat-x; }
+        input[type="range"]#threshold::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 12px; background: var(--win-gray); border: 2px solid; border-color: #fff #000 #000 #fff; }
 
-        .viewport { 
-            flex-grow: 1; background: #000; border: 4px inset var(--win-white); 
-            height: 500px; display: flex; align-items: center; justify-content: center; 
-            overflow: hidden; position: relative; 
-        }
+        .viewport { flex-grow: 1; background: #000; border: 4px inset var(--win-white); height: 500px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
         canvas { image-rendering: pixelated; max-width: 100%; max-height: 100%; object-fit: contain; }
         #vSrc { display: none; }
 
-        .win-btn { 
-            padding: 8px; font-size: 10px; font-weight: bold; text-transform: uppercase;
-            background: var(--win-gray); border: 2px solid; 
-            border-color: var(--win-white) var(--win-black) var(--win-black) var(--win-white); 
-            cursor: pointer; width: 100%; color: var(--win-black);
-        }
+        .win-btn { padding: 8px; font-size: 10px; font-weight: bold; text-transform: uppercase; background: var(--win-gray); border: 2px solid; border-color: var(--win-white) var(--win-black) var(--win-black) var(--win-white); cursor: pointer; width: 100%; color: var(--win-black); margin-bottom: 4px; }
         .win-btn:active { border-color: var(--win-black) var(--win-white) var(--win-white) var(--win-black); padding: 9px 7px 7px 9px; }
-        
-        .btn-chaos { 
-            color: var(--win-white); text-shadow: 1px 1px 0 #000;
-            background-image: linear-gradient(45deg, #f00 25%, #0f0 25%, #0f0 50%, #00f 50%, #00f 75%, #ff0 75%, #ff0 100%);
-            background-size: 6px 6px;
-        }
-        .btn-snap { background: #444; color: #0ff; border-color: #888; }
-
+        .btn-chaos { color: #fff; text-shadow: 1px 1px 0 #000; background-image: linear-gradient(45deg, #f00 25%, #0f0 25%, #0f0 50%, #00f 50%, #00f 75%, #ff0 75%, #ff0 100%); background-size: 6px 6px; }
         .status-bar { border: 1px solid var(--win-dark-gray); padding: 3px 5px; font-size: 10px; background: var(--win-gray); display: flex; justify-content: space-between; flex-shrink: 0; }
-        .eff-select { background: white; border: 1px solid var(--win-black); font-size: 11px; padding: 2px; width: 100%; margin-bottom: 5px; }
+        .eff-select { background: white; border: 1px solid var(--win-black); font-size: 11px; padding: 2px; width: 100%; margin-bottom: 8px; }
     </style>
 </head>
 <body>
 
 <div class="window">
     <div class="title-bar">
-        <span>KIMSORT.exe - v5.1 LOCKDOWN</span>
+        <span>KIMSORT.exe - v5.4 FIXED</span>
         <span>[ 03_Desktop_Shell ]</span>
     </div>
     <div class="main-layout">
@@ -125,67 +100,91 @@
             <canvas id="mainCanvas"></canvas>
             <video id="vSrc" loop muted playsinline crossorigin="anonymous"></video>
         </div>
+
         <div class="controls">
-            <fieldset>
-                <legend>Data Source</legend>
-                <input type="file" id="fIn" accept="image/*, video/mp4" style="display:none" onchange="loadFile(this.files[0])">
-                <button class="win-btn" onclick="document.getElementById('fIn').click()">IMPORT FILE</button>
-            </fieldset>
+            <div class="tabs-header">
+                <div class="tab-btn active" onclick="switchTab(event, 'pane-file')">FILE</div>
+                <div class="tab-btn" onclick="switchTab(event, 'pane-algo')">ALGO</div>
+                <div class="tab-btn" onclick="switchTab(event, 'pane-vector')">VECTOR</div>
+            </div>
 
-            <fieldset>
-                <legend>KIM-Algorithm</legend>
-                <select id="effectType" class="eff-select">
-                    <option value="brightness">Brightness</option>
-                    <option value="saturation">Saturation</option>
-                    <option value="red">Red Channel</option>
-                </select>
-                <div style="display:flex; flex-direction:column; gap:2px">
-                    <label style="font-size:10px">Threshold: <span id="threshVal" style="font-weight:bold">120</span></label>
-                    <input type="range" id="threshold" min="0" max="255" value="120" oninput="updateThreshVisual(this.value)">
-                </div>
-            </fieldset>
+            <div id="pane-file" class="tab-pane active">
+                <fieldset>
+                    <legend>Data Source</legend>
+                    <input type="file" id="fIn" accept="image/*, video/mp4" style="display:none" onchange="loadFile(this.files[0])">
+                    <button class="win-btn" onclick="document.getElementById('fIn').click()">IMPORT FILE</button>
+                    <button class="win-btn" onclick="restoreCurrent()">RESTORE SYSTEM</button>
+                    <button class="win-btn" style="background:#444; color:#0ff" onclick="snapFrame()">SNAP RENDER</button>
+                </fieldset>
+            </div>
 
-            <fieldset>
-                <legend>Sort Vector</legend>
-                <div class="dir-grid">
-                    <div></div><button class="dir-pixel" id="btn-up" onclick="toggleDir('up')">↑</button><div></div>
-                    <button class="dir-pixel" id="btn-left" onclick="toggleDir('left')">←</button>
-                    <div class="center-pixel" onclick="processFrame()">KIM</div>
-                    <button class="dir-pixel" id="btn-right" onclick="toggleDir('right')">→</button>
-                    <div></div><button class="dir-pixel" id="btn-down" onclick="toggleDir('down')">↓</button><div></div>
-                </div>
-            </fieldset>
+            <div id="pane-algo" class="tab-pane">
+                <fieldset>
+                    <legend>KIM-Algorithm</legend>
+                    <select id="effectType" class="eff-select">
+                        <option value="brightness">Brightness</option>
+                        <option value="saturation">Saturation</option>
+                        <option value="red">Red Channel</option>
+                    </select>
+                    <div style="display:flex; flex-direction:column; gap:2px">
+                        <label style="font-size:10px">Threshold: <span id="threshVal" style="font-weight:bold">120</span></label>
+                        <input type="range" id="threshold" min="0" max="255" value="120" oninput="updateThreshVisual(this.value)">
+                    </div>
+                    <button class="win-btn btn-chaos" style="margin-top:8px" onclick="chaosRandom()">CHAOS SHUFFLE</button>
+                </fieldset>
+            </div>
 
-            <button class="win-btn" id="pBtn" onclick="applyProcess()">EXECUTE / PLAY</button>
-            <button class="win-btn btn-chaos" onclick="chaosRandom()">CHAOS SHUFFLE</button>
-            <button class="win-btn" onclick="restoreCurrent()">RESTORE SYSTEM</button>
-            <button class="win-btn btn-snap" onclick="snapFrame()">SNAP RENDER</button>
+            <div id="pane-vector" class="tab-pane">
+                <fieldset>
+                    <legend>Sort Vector</legend>
+                    <div class="dir-grid">
+                        <div></div><button class="dir-pixel" id="btn-up" onclick="toggleDir('up')">↑</button><div></div>
+                        <button class="dir-pixel" id="btn-left" onclick="toggleDir('left')">←</button>
+                        <div class="center-pixel" onclick="processFrame()">KIM</div>
+                        <button class="dir-pixel" id="btn-right" onclick="toggleDir('right')">→</button>
+                        <div></div><button class="dir-pixel" id="btn-down" onclick="toggleDir('down')">↓</button><div></div>
+                    </div>
+                </fieldset>
+            </div>
+
+            <button class="win-btn" id="pBtn" style="background: var(--win-blue); color: white; margin-top:5px" onclick="applyProcess()">EXECUTE / PLAY</button>
         </div>
     </div>
-    <div class="status-bar"><span id="status">KIMSORT Ready.</span><span>KIM-CORE v5.1</span></div>
+    <div class="status-bar"><span id="status">KIMSORT Ready.</span><span>v5.4 Hybrid</span></div>
 </div>
 
 <script>
-    // --- BLOQUEO DE GESTOS DEL NAVEGADOR ---
-    document.addEventListener('touchmove', function(e) {
-        if (e.target.closest('.main-layout')) return; // Permitir scroll interno
+    function switchTab(e, paneId) {
+        if (window.innerWidth > 850) return;
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(paneId).classList.add('active');
+        e.currentTarget.classList.add('active');
+    }
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 850) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('active'));
+        } else {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.getElementById('pane-file').classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('.tab-btn').classList.add('active');
+        }
+    });
+
+    document.addEventListener('touchmove', e => {
+        if (e.target.closest('.tab-pane') || e.target.closest('.viewport')) return;
         e.preventDefault();
     }, { passive: false });
 
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.addEventListener('keydown', e => {
-        if (e.key === "F12" || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'u')) e.preventDefault();
-    });
-
-    const canvas = document.getElementById('mainCanvas');
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    const video = document.getElementById('vSrc');
-    const pBtn = document.getElementById('pBtn');
-    let currentOriginal = new Image();
-    let activeDirs = { up: false, down: false, left: false, right: false };
-    let isVideo = false; let isPlaying = false; let animFrame = null;
+    const canvas = document.getElementById('mainCanvas'), ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const video = document.getElementById('vSrc'), pBtn = document.getElementById('pBtn');
+    let currentOriginal = new Image(), activeDirs = { up: false, down: false, left: false, right: false };
+    let isVideo = false, isPlaying = false, animFrame = null;
 
     window.onload = () => {
+        if (window.innerWidth > 850) document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('active'));
         updateThreshVisual(120);
         currentOriginal.crossOrigin = "Anonymous";
         currentOriginal.src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800"; 
@@ -195,26 +194,26 @@
     function toggleDir(dir) {
         activeDirs[dir] = !activeDirs[dir];
         document.getElementById(`btn-${dir}`).classList.toggle('active');
-        updateStatus(`Vector ${dir.toUpperCase()} ${activeDirs[dir] ? 'ACTIVE' : 'INACTIVE'}`);
+        if(!isVideo) processFrame();
     }
 
     function updateThreshVisual(val) {
         document.getElementById('threshVal').innerText = val;
         document.getElementById('threshold').style.setProperty('--thr-pc', `${(val/255)*100}%`);
-        if(!isVideo && isPlaying) processFrame(); 
+        if(!isVideo && !isPlaying) processFrame(); 
     }
 
     function loadFile(file) {
-        if (!file || file.size > 2 * 1024 * 1024) { updateStatus("ERR: SIZE > 2MB", true); return; }
+        if (!file || file.size > 2 * 1024 * 1024) return;
         resetEngine();
         const url = URL.createObjectURL(file);
         if (file.type.includes('video')) {
             isVideo = true; video.src = url;
             video.onloadedmetadata = () => { canvas.width = video.videoWidth; canvas.height = video.videoHeight; video.currentTime = 0.1; };
-            video.onseeked = () => { ctx.drawImage(video, 0, 0); updateStatus("KIM-VIDEO LOADED."); pBtn.innerText = "PLAY VIDEO"; };
+            video.onseeked = () => ctx.drawImage(video, 0, 0);
         } else {
             const newImg = new Image();
-            newImg.onload = () => { currentOriginal = newImg; restoreCurrent(); updateStatus("KIM-IMG LOADED."); };
+            newImg.onload = () => { currentOriginal = newImg; restoreCurrent(); };
             newImg.src = url;
         }
     }
@@ -222,15 +221,12 @@
     function resetEngine() { isPlaying = false; video.pause(); video.src = ""; if (animFrame) cancelAnimationFrame(animFrame); }
 
     function restoreCurrent() {
-        if (isVideo) { video.pause(); isPlaying = false; video.currentTime = 0.1; ctx.drawImage(video, 0, 0); pBtn.innerText = "PLAY VIDEO"; }
-        else { canvas.width = currentOriginal.width; canvas.height = currentOriginal.height; ctx.drawImage(currentOriginal, 0, 0); pBtn.innerText = "EXECUTE SORT"; }
+        if (isVideo) { video.pause(); isPlaying = false; video.currentTime = 0.1; ctx.drawImage(video, 0, 0); }
+        else { canvas.width = currentOriginal.width; canvas.height = currentOriginal.height; ctx.drawImage(currentOriginal, 0, 0); }
         updateStatus("SYSTEM RESTORED.");
     }
 
-    function updateStatus(msg, err = false) { 
-        const s = document.getElementById('status');
-        s.innerText = "STATUS: " + msg; s.style.color = err ? "red" : "black";
-    }
+    function updateStatus(msg) { document.getElementById('status').innerText = "STATUS: " + msg; }
 
     function getVal(r, g, b, type) {
         if (type === 'brightness') return (r + g + b) / 3;
@@ -241,22 +237,22 @@
     function applyProcess() {
         if (isVideo) {
             isPlaying = !isPlaying;
-            if (isPlaying) { video.play(); renderLoop(); } 
-            else { video.pause(); if (animFrame) cancelAnimationFrame(animFrame); }
+            isPlaying ? (video.play(), renderLoop()) : video.pause();
             pBtn.innerText = isPlaying ? "STOP KIMSORT" : "PLAY VIDEO";
         } else { processFrame(); }
     }
 
     function renderLoop() {
-        if (isVideo) ctx.drawImage(video, 0, 0);
-        processFrame();
-        if (isVideo && isPlaying) animFrame = requestAnimationFrame(renderLoop);
+        if (isVideo && isPlaying) {
+            ctx.drawImage(video, 0, 0);
+            processFrame();
+            animFrame = requestAnimationFrame(renderLoop);
+        }
     }
 
     function processFrame() {
         const type = document.getElementById('effectType').value, thresh = parseInt(document.getElementById('threshold').value);
         const noDir = !activeDirs.up && !activeDirs.down && !activeDirs.left && !activeDirs.right;
-        updateStatus("KIMSORT EXECUTING...");
         if (activeDirs.left || activeDirs.right || noDir) runSort('horizontal', thresh, type, activeDirs.left ? -1 : 1, noDir);
         if (activeDirs.up || activeDirs.down) runSort('vertical', thresh, type, activeDirs.up ? -1 : 1, false);
     }
@@ -276,8 +272,7 @@
                 let end = start; while (end < inner && pixels[end].val >= thresh) end++;
                 if (end > start) {
                     const seg = pixels.slice(start, end);
-                    if (isFullRandom) seg.sort(() => Math.random() - 0.5);
-                    else seg.sort((a, b) => dir > 0 ? a.val - b.val : b.val - a.val);
+                    isFullRandom ? seg.sort(() => Math.random() - 0.5) : seg.sort((a, b) => dir > 0 ? a.val - b.val : b.val - a.val);
                     for (let k = 0; k < seg.length; k++) pixels[start + k] = seg[k];
                 }
                 start = end;
@@ -293,21 +288,23 @@
     function chaosRandom() {
         const effects = ['brightness', 'saturation', 'red'];
         document.getElementById('effectType').value = effects[Math.floor(Math.random() * effects.length)];
-        updateThreshVisual(Math.floor(Math.random() * 200));
+        const randThresh = Math.floor(Math.random() * 200);
+        document.getElementById('threshold').value = randThresh;
+        updateThreshVisual(randThresh);
         ['up', 'down', 'left', 'right'].forEach(d => { 
             activeDirs[d] = Math.random() > 0.5;
             const btn = document.getElementById(`btn-${d}`);
             activeDirs[d] ? btn.classList.add('active') : btn.classList.remove('active');
         });
+        // FIX: Ejecutar el proceso inmediatamente después de los cambios aleatorios
+        processFrame();
     }
 
     function snapFrame() {
-        updateStatus("KIM-SNAP IN PROGRESS...");
         const link = document.createElement('a');
-        link.download = `KIMSORT_RENDER_${Date.now()}.png`;
-        link.href = canvas.toDataURL("image/png");
+        link.download = `KIMSORT_${Date.now()}.png`;
+        link.href = canvas.toDataURL();
         link.click();
-        setTimeout(() => updateStatus("KIMSORT SNAP SAVED."), 1000);
     }
 </script>
 </body>
