@@ -202,7 +202,9 @@
         });
     };
 
-    img.crossOrigin = "Anonymous"; img.src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800";
+    img.crossOrigin = "Anonymous"; 
+    // Carga de la imagen pixelsort.jpg desde el repositorio
+    img.src = "https://raw.githubusercontent.com/borfwashere/pixelsort/main/pixelsort.jpg";
     img.onload = () => { canvas.width = img.width; canvas.height = img.height; ctx.drawImage(img, 0, 0); upUI(); };
 
     // Anti-Console
