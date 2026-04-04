@@ -63,6 +63,7 @@
                 <fieldset><legend>Data</legend>
                     <input type="file" id="fi" accept="image/*, video/mp4" style="display:none">
                     <button class="win-btn" onclick="document.getElementById('fi').click()">IMPORT</button>
+                    <button class="win-btn" id="snap" style="margin-top:5px; background: var(--win-blue); color: white;">SNAP FRAME</button>
                     <button class="win-btn" id="res" style="margin-top:5px">RESTORE</button>
                 </fieldset>
             </div>
@@ -113,8 +114,16 @@
     document.getElementById('fi').onchange = (e) => {
         const file = e.target.files[0]; if(!file) return;
         const url = URL.createObjectURL(file);
-        if(file.type.includes('video')) { isV = true; video.src = url; video.onloadedmetadata = () => { canvas.width = video.videoWidth; canvas.height = video.videoHeight; video.currentTime = 0.1; }; video.onseeked = () => ctx.drawImage(video, 0, 0); }
-        else { isV = false; img.onload = () => { canvas.width = img.width; canvas.height = img.height; ctx.drawImage(img, 0, 0); }; img.src = url; }
+        if(file.type.includes('video')) { 
+            isV = true; video.src = url; 
+            video.onloadedmetadata = () => { canvas.width = video.videoWidth; canvas.height = video.videoHeight; video.currentTime = 0.1; }; 
+            video.onseeked = () => ctx.drawImage(video, 0, 0); 
+        }
+        else { 
+            isV = false; 
+            img.onload = () => { canvas.width = img.width; canvas.height = img.height; ctx.drawImage(img, 0, 0); }; 
+            img.src = url; 
+        }
     };
 
     const run = (axis, th, type, d, ran) => {
@@ -166,10 +175,31 @@
     });
 
     document.getElementById('tr').oninput = upUI;
-    document.getElementById('res').onclick = () => { location.reload(); };
+    
+    document.getElementById('res').onclick = () => { 
+        if(isV) {
+            isP = false; video.pause(); pBtn.innerText = "PLAY";
+            video.currentTime = 0.1; ctx.drawImage(video, 0, 0);
+        } else { ctx.drawImage(img, 0, 0); }
+    };
+
+    document.getElementById('snap').onclick = () => {
+        const link = document.createElement('a');
+        link.download = `KIMSORT_v5.9_capture_${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    };
+
     document.getElementById('ch').onclick = () => {
         document.getElementById('ef').selectedIndex = Math.floor(Math.random()*3);
-        document.getElementById('tr').value = Math.random()*200; upUI();
+        document.getElementById('tr').value = Math.random()*200; 
+        upUI();
+        ['up','down','left','right'].forEach(d => {
+            const isActive = Math.random() > 0.5;
+            dirs[d] = isActive;
+            const btn = document.getElementById(`b-${d}`);
+            isActive ? btn.classList.add('active') : btn.classList.remove('active');
+        });
     };
 
     img.crossOrigin = "Anonymous"; img.src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800";
